@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+import json
+import logging
+from configparser import ConfigParser
+from pathlib import Path
+from typing import Optional
+
+import requests
+from requests import JSONDecodeError, Response
+
+from ogsdownloader import oauth2
+from ogsdownloader.exceptions import OGSDownloaderException
+from ogsdownloader.game import Game
+
+logger = logging.getLogger(__name__)
+
+
+class Player:
+    def __init__(self, config: ConfigParser):
+        self.authorisation_token: Optional[str] = None
+        self.refresh_token: Optional[str] = None
+        self.config = config
+
+    def load_tokens(self):
+        self.refresh_token = self.config['DEFAULT']['refresh_token']
+        self.authorisation_token = self.config['DEFAULT']['authorisation_token']
+
+    def get_user_data_from_id(self, user_id: int) -> dict:
+        response = self.make_request(f'http://online-go.com/api/v1/players/{user_id}/')
+        try:
+            return response.json()
+        except JSONDecodeError:
+            raise
+
+    def resolve_username_to_id(self, username: str) -> int:
+        response = self.make_request(f'http://online-go.com/api/v1/players?username={username}')
+        try:
+            result = response.json()
+            return result['results'][0].get('id')
+        except JSONDecodeError:
+            raise
+        except KeyError:
+            raise OGSDownloaderException(f'No user found to match username {username}')
+
+    def get_games_from_user_id(self, user_id: int) -> dict:
+        response = self.make_request(f'http://online-go.com/api/v1/players/{user_id}/games/')
+        try:
+            return response.json()
+        except JSONDecodeError:
+            raise
+
+    @staticmethod
+    def _extract_game_links(data: dict) -> list[str]:
+        out = []
+        for game in data['results']:
+            out.append(f'http://online-go.com/api/v1/games/{game["id"]}/sgf/')
+        return out
+
+    def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str):
+        data = self.get_games_from_user_id(user_id)
+        logger.debug(f'Found details of {len(data["results"])} games')
+        games = [Game(d) for d in data['results']]
+        logger.info(f'Found {len(games)} games for user id {user_id}')
+        for g in games:
+            sgf_file = self.make_request(g.sgf_link)
+            file_path = Path(destination, g.generate_filename(format_string))
+            with open(file_path, 'wb') as file:
+                file.write(sgf_file.content)
+            logger.info(f'Wrote file to {file_path}')
+
+    def make_request(self, url: str) -> Response:
+        headers = {
+            'accept': 'application/json, application/x-go-sgf',
+            'headers': 'Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0',
+            'Authorization': f'Bearer {self.authorisation_token}',
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            new_tokens = oauth2.get_token(self.config, True)
+            self.refresh_token = new_tokens[1]
+            self.authorisation_token = new_tokens[0]
+            headers['Authorization'] = f'Bearer {self.authorisation_token}'
+            response = requests.get(url, headers=headers)
+            if response != 200:
+                raise OGSDownloaderException()
+        return response
