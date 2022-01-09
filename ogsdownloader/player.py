@@ -4,11 +4,12 @@
 import json
 import logging
 from configparser import ConfigParser
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Optional
 
 import requests
-from requests import JSONDecodeError, Response
+from requests import Response
 
 from ogsdownloader import oauth2
 from ogsdownloader.exceptions import OGSDownloaderException
