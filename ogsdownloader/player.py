@@ -45,24 +45,27 @@ class Player:
         except KeyError:
             raise OGSDownloaderException(f'No user found to match username {username}')
 
-    def get_games_from_user_id(self, user_id: int) -> dict:
-        response = self.make_request(f'http://online-go.com/api/v1/players/{user_id}/games/')
-        try:
-            return response.json()
-        except JSONDecodeError:
-            raise
-
-    @staticmethod
-    def _extract_game_links(data: dict) -> list[str]:
-        out = []
-        for game in data['results']:
-            out.append(f'http://online-go.com/api/v1/games/{game["id"]}/sgf/')
-        return out
+    def get_games_from_user_id(self, user_id: int) -> list[dict]:
+        results = []
+        url = f'http://online-go.com/api/v1/players/{user_id}/games/'
+        while True:
+            logger.debug(f'Requesting page {url} to get game data')
+            response = self.make_request(url)
+            try:
+                game_data = response.json()
+            except JSONDecodeError:
+                raise
+            results.extend(game_data['results'])
+            if not game_data.get('next'):
+                break
+            else:
+                url = game_data['next']
+        return results
 
     def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str):
         data = self.get_games_from_user_id(user_id)
-        logger.debug(f'Found details of {len(data["results"])} games')
-        games = [Game(d) for d in data['results']]
+        logger.debug(f'Found details of {len(data)} games')
+        games = [Game(d) for d in data]
         logger.info(f'Found {len(games)} games for user id {user_id}')
         for g in games:
             sgf_file = self.make_request(g.sgf_link)
@@ -85,5 +88,5 @@ class Player:
             headers['Authorization'] = f'Bearer {self.authorisation_token}'
             response = requests.get(url, headers=headers)
             if response != 200:
-                raise OGSDownloaderException()
+                raise OGSDownloaderException(f'Failed to get {url}; status code {response.status_code}')
         return response

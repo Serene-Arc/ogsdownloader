@@ -62,6 +62,7 @@ def test_resolve_username_to_id(test_username: str, expected: int, config: Confi
     (1070215, 4, {
         '40071592_teaching game 0002.sgf',
     }),
+    ('21529', 80, {}),
 ))
 def test_download_games_from_user_id(
         test_user_id: int,
