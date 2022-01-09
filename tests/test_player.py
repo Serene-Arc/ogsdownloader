@@ -58,6 +58,7 @@ def test_resolve_username_to_id(test_username: str, expected: int, config: Confi
     assert result == expected
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(('test_user_id', 'expected_len', 'expected_files'), (
     (1070215, 4, {
         '40071592_teaching game 0002.sgf',
