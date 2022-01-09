@@ -3,6 +3,7 @@
 
 import json
 import logging
+import time
 from configparser import ConfigParser
 from json import JSONDecodeError
 from pathlib import Path
@@ -19,10 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 class Player:
-    def __init__(self, config: ConfigParser):
+    def __init__(self, config: ConfigParser, sleep: int):
         self.authorisation_token: Optional[str] = None
         self.refresh_token: Optional[str] = None
         self.config = config
+        self.sleep_time = sleep
 
     def load_tokens(self):
         self.refresh_token = self.config['DEFAULT']['refresh_token']
@@ -47,7 +49,7 @@ class Player:
 
     def get_games_from_user_id(self, user_id: int) -> list[dict]:
         results = []
-        url = f'http://online-go.com/api/v1/players/{user_id}/games/'
+        url = f'http://online-go.com/api/v1/players/{user_id}/games?page_size=50'
         while True:
             logger.debug(f'Requesting page {url} to get game data')
             response = self.make_request(url)
@@ -60,6 +62,7 @@ class Player:
                 break
             else:
                 url = game_data['next']
+                time.sleep(self.sleep_time)
         return results
 
     def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str):
@@ -73,6 +76,7 @@ class Player:
             with open(file_path, 'wb') as file:
                 file.write(sgf_file.content)
             logger.info(f'Wrote file to {file_path}')
+            time.sleep(self.sleep_time)
 
     def make_request(self, url: str) -> Response:
         headers = {

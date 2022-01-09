@@ -30,7 +30,7 @@ def config() -> ConfigParser:
     }),
 ))
 def test_get_user_data_from_id(test_user_id: int, expected: dict, config: ConfigParser):
-    test_user = Player(config)
+    test_user = Player(config, 5)
     test_user.load_tokens()
     result = test_user.get_user_data_from_id(test_user_id)
     assert isinstance(result, dict)
@@ -41,7 +41,7 @@ def test_get_user_data_from_id(test_user_id: int, expected: dict, config: Config
     (1070215, 4),
 ))
 def test_get_games_from_user_id(test_user_id: int, expected_len_min: int, config: ConfigParser):
-    test_user = Player(config)
+    test_user = Player(config, 5)
     test_user.load_tokens()
     result = test_user.get_games_from_user_id(test_user_id)
     assert isinstance(result, dict)
@@ -52,7 +52,7 @@ def test_get_games_from_user_id(test_user_id: int, expected_len_min: int, config
     ('Serene-Arc', 1070215),
 ))
 def test_resolve_username_to_id(test_username: str, expected: int, config: ConfigParser):
-    test_user = Player(config)
+    test_user = Player(config, 5)
     test_user.load_tokens()
     result = test_user.resolve_username_to_id(test_username)
     assert result == expected
@@ -71,7 +71,7 @@ def test_download_games_from_user_id(
         config: ConfigParser,
         expected_files: set[str],
 ):
-    test_user = Player(config)
+    test_user = Player(config, 5)
     test_user.load_tokens()
     test_user.download_games_from_user_id(test_user_id, tmp_path, '{ID}_{NAME}')
     files = list(tmp_path.iterdir())

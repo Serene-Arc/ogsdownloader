@@ -42,6 +42,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     parser.add_argument('-f', '--format', type=str, default='{ID}')
     parser.add_argument('-c', '--config', default=None)
     parser.add_argument('--authorised', action='store_true')
+    parser.add_argument('-s', '--sleep', type=int, default=5)
 
 
 def main(args: argparse.Namespace):
@@ -91,7 +92,7 @@ def main(args: argparse.Namespace):
             config.set('DEFAULT', 'refresh_token', tokens[1])
             config.set('DEFAULT', 'authorisation_token', tokens[0])
 
-    player = Player(config)
+    player = Player(config, args.sleep)
     if not args.authorised:
         player.load_tokens()
         logger.debug('Tokens loaded')
