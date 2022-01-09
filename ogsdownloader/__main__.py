@@ -34,15 +34,15 @@ def _setup_logging(verbosity: int):
 
 
 def add_arguments(parser: argparse.ArgumentParser):
-    parser.add_argument('-v', '--verbose', action='count', default=0)
-    parser.add_argument('-i', '--interactive', action='store_true')
-    parser.add_argument('-u', '--user-id', action='append', default=[])
-    parser.add_argument('--username', default=None)
     parser.add_argument('destination')
-    parser.add_argument('-f', '--format', type=str, default='{ID}')
-    parser.add_argument('-c', '--config', default=None)
     parser.add_argument('--authorised', action='store_true')
+    parser.add_argument('--username', default=None)
+    parser.add_argument('-c', '--config', default=None)
+    parser.add_argument('-f', '--format', type=str, default='{ID}')
+    parser.add_argument('-i', '--interactive', action='store_true')
     parser.add_argument('-s', '--sleep', type=int, default=5)
+    parser.add_argument('-u', '--user-id', action='append', default=[])
+    parser.add_argument('-v', '--verbose', action='count', default=0)
 
 
 def main(args: argparse.Namespace):
