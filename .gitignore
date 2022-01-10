@@ -139,3 +139,5 @@ cython_debug/
 !/tests/test_player.py
 
 test_config.cfg
+AUTHORS
+ChangeLog
