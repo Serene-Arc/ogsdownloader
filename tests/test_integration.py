@@ -23,9 +23,9 @@ def test_integration_basic(args: Namespace, capsys: pytest.CaptureFixture):
     assert 'Wrote file to' in output.err
 
 
-def test_integration_basic_unauthorised(args: Namespace, capsys: pytest.CaptureFixture):
+def test_integration_basic_authorised(args: Namespace, capsys: pytest.CaptureFixture):
     args.user_id = ['1070215', ]
-    args.unauthorised = True
+    args.authorised = True
     main.main(args)
     output = capsys.readouterr()
     assert 'Wrote file to' in output.err
