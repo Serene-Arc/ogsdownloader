@@ -71,12 +71,13 @@ class Player:
         games = [Game(d) for d in data]
         logger.info(f'Found {len(games)} games for user id {user_id}')
         for g in games:
-            sgf_file = self.make_request(g.sgf_link)
-            file_path = Path(destination, g.generate_filename(format_string))
-            with open(file_path, 'wb') as file:
-                file.write(sgf_file.content)
-            logger.info(f'Wrote file to {file_path}')
-            time.sleep(self.sleep_time)
+            if not g.end_time == "Unknown":
+                sgf_file = self.make_request(g.sgf_link)
+                file_path = Path(destination, g.generate_filename(format_string))
+                with open(file_path, 'wb') as file:
+                    file.write(sgf_file.content)
+                logger.info(f'Wrote file to {file_path}')
+                time.sleep(self.sleep_time)
 
     def make_request(self, url: str) -> Response:
         headers = {
