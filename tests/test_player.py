@@ -38,7 +38,7 @@ def test_get_user_data_from_id(test_user_id: int, expected: dict, config: Config
 
 
 @pytest.mark.parametrize(('test_user_id', 'expected_len_min'), (
-    (1070215, 44),
+    (1070215, 40),
 ))
 def test_get_games_from_user_id(test_user_id: int, expected_len_min: int, config: ConfigParser):
     test_user = Player(config, 5)
@@ -58,24 +58,15 @@ def test_resolve_username_to_id(test_username: str, expected: int, config: Confi
     assert result == expected
 
 
-@pytest.mark.slow
-@pytest.mark.parametrize(('test_user_id', 'expected_len', 'expected_files'), (
-    (1070215, 4, {
-        '40071592_teaching game 0002.sgf',
+@pytest.mark.parametrize(('test_game_id', 'expected'), (
+    (41362224, {
+        'black': 1070215,
+        'rules': 'japanese',
+        'white_lost': True,
     }),
-    ('21529', 80, {}),
 ))
-def test_download_games_from_user_id(
-        test_user_id: int,
-        expected_len: int,
-        tmp_path: Path,
-        config: ConfigParser,
-        expected_files: set[str],
-):
+def test_download_game_data_from_id(test_game_id: int, expected: dict, config: ConfigParser):
     test_user = Player(config, 5)
     test_user.load_tokens()
-    test_user.download_games_from_user_id(test_user_id, tmp_path, '{ID}_{NAME}')
-    files = list(tmp_path.iterdir())
-    assert len(files) == expected_len
-    filenames = [f.name for f in files]
-    assert all([n in filenames for n in expected_files])
+    result = test_user.get_game_data_from_id(test_game_id)
+    assert all([result[key] == expected[key] for key in expected.keys()])

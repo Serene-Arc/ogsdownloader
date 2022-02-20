@@ -65,11 +65,8 @@ class Player:
                 time.sleep(self.sleep_time)
         return results
 
-    def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str):
-        data = self.get_games_from_user_id(user_id)
-        logger.debug(f'Found details of {len(data)} games')
+    def write_games(self, data: list[dict], destination: Path, format_string: str):
         games = [Game(d) for d in data]
-        logger.info(f'Found {len(games)} games for user id {user_id}')
         for g in games:
             sgf_file = self.make_request(g.sgf_link)
             file_path = Path(destination, g.generate_filename(format_string))
@@ -77,6 +74,13 @@ class Player:
                 file.write(sgf_file.content)
             logger.info(f'Wrote file to {file_path}')
             time.sleep(self.sleep_time)
+
+    def get_game_data_from_id(self, game_id: int) -> dict:
+        response = self.make_request(f'http://online-go.com/api/v1/games/{game_id}/')
+        try:
+            return response.json()
+        except JSONDecodeError:
+            raise
 
     def make_request(self, url: str) -> Response:
         headers = {

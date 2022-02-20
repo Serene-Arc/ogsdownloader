@@ -97,6 +97,7 @@ def main(args: argparse.Namespace):
     if args.authorised:
         player.load_tokens()
         logger.debug('Tokens loaded')
+    data =[]
     for user in args.user_id:
         try:
             user = int(user)
@@ -106,8 +107,14 @@ def main(args: argparse.Namespace):
             except OGSDownloaderException as e:
                 logger.error(e)
                 continue
+        interim_data = player.get_games_from_user_id(user)
+        logger.info(f'Found {len(interim_data)} games for user id {user}')
+        data.extend(interim_data)
+    for game in args.game:
+        data.append(player.get_game_data_from_id(game))
+        logger.info(f'Retrieved game data for game id {game}')
 
-        player.download_games_from_user_id(user, args.destination, args.format)
+    player.write_games(data, args.destination, args.format)
 
     player.config.remove_option('DEFAULT', 'password')
     with open(config_file_location, 'w') as file:
