@@ -40,6 +40,7 @@ def add_arguments(parser: argparse.ArgumentParser):
     parser.add_argument('-c', '--config', default=None)
     parser.add_argument('-f', '--format', type=str, default='{ID}')
     parser.add_argument('-i', '--interactive', action='store_true')
+    parser.add_argument('-p', '--page', type=int, default=1)
     parser.add_argument('-s', '--sleep', type=int, default=5)
     parser.add_argument('-u', '--user-id', action='append', default=[])
     parser.add_argument('-v', '--verbose', action='count', default=0)
@@ -106,7 +107,7 @@ def main(args: argparse.Namespace):
                 logger.error(e)
                 continue
 
-        player.download_games_from_user_id(user, args.destination, args.format)
+        player.download_games_from_user_id(user, args.destination, args.format, args.page)
 
     player.config.remove_option('DEFAULT', 'password')
     with open(config_file_location, 'w') as file:
