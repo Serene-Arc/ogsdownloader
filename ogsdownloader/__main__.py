@@ -70,7 +70,7 @@ def main(args: argparse.Namespace):
         config['DEFAULT']['client_secret'] = 'eAeq0D4CB9akF9WNpYZmYk8ZfrtpqfTV5TuerNa006dR5BdcYrMxnBPAN4Y2m9B4NR3DIT0'\
                                              'w3A1BqlJIOZXyIa8M32kIsg2q85HxsnWit5nYyHv9CeZafk5NLtww7iNq'
 
-    if not config.has_option('DEFAULT', 'username') and not args.username and not args.unauthorised:
+    if not config.has_option('DEFAULT', 'username') and not args.username and args.authorised:
         if args.interactive:
             config['DEFAULT']['username'] = input('Pleas enter YOUR username: ')
         else:
