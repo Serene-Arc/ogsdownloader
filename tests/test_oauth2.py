@@ -7,10 +7,10 @@ import pytest
 import ogsdownloader.oauth2 as oauth2
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def config() -> ConfigParser:
     config = ConfigParser()
-    config.read('test_config.cfg')
+    config.read("test_config.cfg")
     return config
 
 
