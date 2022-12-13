@@ -29,32 +29,32 @@ python3 -m ogsdownloader sgf_files -u <USERNAME>
 The following is an explanation of the available arguments and options for the tool.
 
 - `destination`
-  - The destination to which the files will be downloaded, this is required
-  - Folder will be created if it doesn't already exist
+    - The destination to which the files will be downloaded, this is required
+    - Folder will be created if it doesn't already exist
 - `--authorised`
-  - Use user authentication when making requests to OGS
-  - This will enable downloading private games from the authenticated person's profile
+    - Use user authentication when making requests to OGS
+    - This will enable downloading private games from the authenticated person's profile
 - `--username`
-  - The username to authenticate with i.e. **your username**
+    - The username to authenticate with i.e. **your username**
 - `-c, --config`
-  - The config file to use
-  - If not supplied, the tool will default to the applications directory
+    - The config file to use
+    - If not supplied, the tool will default to the applications directory
 - `-f, --format`
-  - The naming scheme for the files
-  - By default, it is '{ID}'
-  - See [Name Formatting](#name-formatting) below for details
+    - The naming scheme for the files
+    - By default, it is '{ID}'
+    - See [Name Formatting](#name-formatting) below for details
 - `-i, --interactive`
-  - Whether to use interactive mode, prompting for username and password
-  - Only useful when using an authorised instance
+    - Whether to use interactive mode, prompting for username and password
+    - Only useful when using an authorised instance
 - `-s, --sleep`
-  - The time to sleep in seconds between making consecutive requests to OGS
-  - Defaults to 5 seconds
-  - See [Rate Limiting](#rate-limiting) below
+    - The time to sleep in seconds between making consecutive requests to OGS
+    - Defaults to 5 seconds
+    - See [Rate Limiting](#rate-limiting) below
 - `-u, --user-id`
-  - The user ID or username of the profile to download from
-  - Can be specified multiple times e.g. `-u 1234 -u 5678`
+    - The user ID or username of the profile to download from
+    - Can be specified multiple times e.g. `-u 1234 -u 5678`
 - `-v, --verbose`
-  - Increases the output of the program
+    - Increases the output of the program
 
 ## Rate Limiting
 
