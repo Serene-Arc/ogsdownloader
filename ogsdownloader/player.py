@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-import json
 import logging
 import time
 from configparser import ConfigParser
@@ -47,9 +46,9 @@ class Player:
         except KeyError:
             raise OGSDownloaderException(f'No user found to match username {username}')
 
-    def get_games_from_user_id(self, user_id: int) -> list[dict]:
+    def get_games_from_user_id(self, user_id: int, page: int) -> list[dict]:
         results = []
-        url = f'http://online-go.com/api/v1/players/{user_id}/games?page_size=50'
+        url = f'http://online-go.com/api/v1/players/{user_id}/games?page_size=10&ordering=ended&page={page}'
         while True:
             logger.debug(f'Requesting page {url} to get game data')
             response = self.make_request(url)
@@ -65,8 +64,8 @@ class Player:
                 time.sleep(self.sleep_time)
         return results
 
-    def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str):
-        data = self.get_games_from_user_id(user_id)
+    def download_games_from_user_id(self, user_id: int, destination: Path, format_string: str, page: int):
+        data = self.get_games_from_user_id(user_id, page)
         logger.debug(f'Found details of {len(data)} games')
         games = [Game(d) for d in data]
         logger.info(f'Found {len(games)} games for user id {user_id}')

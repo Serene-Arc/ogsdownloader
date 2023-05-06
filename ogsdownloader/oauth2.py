@@ -7,7 +7,9 @@ from configparser import ConfigParser
 from urllib.parse import urlencode
 
 import requests
-from requests import JSONDecodeError
+
+import json
+from json import JSONDecodeError
 
 from ogsdownloader.exceptions import AuthenticationError
 
