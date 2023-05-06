@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python package
+name: Python Test
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,6 +29,12 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Create configuration file
+      env:
+        TEST_PASSWORD: ${{ secrets.TEST_OGS_PASSWORD }}
+        TEST_USERNAME: ${{ secrets.TEST_OGS_USERNAME }}
+      run: |
+          ./.github/workflows/configure.sh
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
